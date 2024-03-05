@@ -15,57 +15,67 @@ public class GameManager : MonoBehaviour
     public GameObject SmallFish;
     public GameObject WhiteFish;
     private int SmallFishNumber;
-    public Vector3 smallDir, WhiteTarget, screenBounds;
-
+    public Vector3 whiteDir;
 
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
-        screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
-
         //small fish
         SmallFishNumber = Random.Range(3, 8);
-        generateSmallFish();
-        InvokeRepeating("changeDirection", 2, Random.Range(2f,5f));
-        smallDir = Random.insideUnitSphere.normalized;
-
-        //White fish
-        generateWhiteFish();
-        WhiteTarget = SmallFish.transform.position;
+        InvokeRepeating("generateSmallFish", 0, Random.Range(5f, 8f));
     }
 
     // Update is called once per frame
     void Update()
     {
-        //white fish
-        if (WhiteFish.transform.position == GameManager.instance.WhiteTarget)
+        if (GameObject.FindWithTag("whiteFish") == null)
         {
-            WhiteTarget = SmallFish.transform.position;
+            generateWhiteFish();
         }
-
-
     }
 
     void generateSmallFish()
     {
-        float xpos = Random.Range(-5, 5);
+        float xpos;
         float ypos = Random.Range(-5, 5);
+        float radians;
+        int side = Random.Range(0,2);
+        if (side == 0)
+        {
+            xpos = 10f;
+            radians = Random.Range(110f, 250f) * Mathf.Deg2Rad;
+        }
+        else
+        {
+            xpos = -10f;
+            radians = Random.Range(310f, 410f) * Mathf.Deg2Rad;
+        }
         for (int i = 0; i < SmallFishNumber; i++)
         {
-            Instantiate(SmallFish, new Vector3(xpos - Random.Range(-1f,1f),ypos - Random.Range(-1f, 1f), 0), Quaternion.identity);
+            GameObject newFish = Instantiate(SmallFish, new Vector3(xpos - Random.Range(-1f,1f),ypos - Random.Range(-1f, 1f), 0), Quaternion.identity);
+            newFish.GetComponent<SmallFish>().smallDir = new Vector3(Mathf.Cos(radians), Mathf.Sin(radians), 0f);
         }
     }
 
     void generateWhiteFish()
     {
-        float xpos = Random.Range(-5, 5);
+        float xpos;
         float ypos = Random.Range(-5, 5);
-        Instantiate(WhiteFish, new Vector3(xpos, ypos, 0), Quaternion.identity);
+        float radians;
+        int side = Random.Range(0, 2);
+        if (side == 0)
+        {
+            xpos = 8f;
+            radians = Random.Range(110f, 250f) * Mathf.Deg2Rad;
+        }
+        else
+        {
+            xpos = -8f;
+            radians = Random.Range(310f, 410f) * Mathf.Deg2Rad;
+        }
+        GameObject newFish = Instantiate(WhiteFish, new Vector3(xpos, ypos, 0), Quaternion.identity);
+        newFish.GetComponent<whiteFish>().whiteDir = new Vector3(Mathf.Cos(radians), Mathf.Sin(radians), 0f);
     }
 
-    void changeDirection()
-    {
-        smallDir = Random.insideUnitSphere.normalized;
-    }
 }
